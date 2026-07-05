@@ -15,6 +15,7 @@
     "db:push:test": "drizzle-kit push --config drizzle-test.config.ts --force"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.2",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "next": "15.5.20",
