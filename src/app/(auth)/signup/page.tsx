@@ -18,22 +18,27 @@ export default function SignUpPage() {
       email: String(form.get("email") ?? ""),
       password: String(form.get("password") ?? ""),
     };
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      setError(body.error ?? "Sign-up failed");
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body.error ?? "Sign-up failed");
+        setSubmitting(false);
+        return;
+      }
+      await signIn("credentials", {
+        email: payload.email,
+        password: payload.password,
+        redirectTo: "/dashboard",
+      });
+    } catch {
+      setError("Something went wrong — please try again");
       setSubmitting(false);
-      return;
     }
-    await signIn("credentials", {
-      email: payload.email,
-      password: payload.password,
-      redirectTo: "/dashboard",
-    });
   }
 
   return (

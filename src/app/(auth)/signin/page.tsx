@@ -13,17 +13,22 @@ export default function SignInPage() {
     setError(null);
     setSubmitting(true);
     const form = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
-      email: String(form.get("email") ?? ""),
-      password: String(form.get("password") ?? ""),
-      redirect: false,
-    });
-    if (res?.error) {
-      setError("Invalid email or password");
+    try {
+      const res = await signIn("credentials", {
+        email: String(form.get("email") ?? ""),
+        password: String(form.get("password") ?? ""),
+        redirect: false,
+      });
+      if (res?.error) {
+        setError("Invalid email or password");
+        setSubmitting(false);
+        return;
+      }
+      window.location.href = "/dashboard";
+    } catch {
+      setError("Something went wrong — please try again");
       setSubmitting(false);
-      return;
     }
-    window.location.href = "/dashboard";
   }
 
   return (
