@@ -38,4 +38,14 @@ describe("createUser", () => {
       createUser({ email: "JANE@example.com", password: "other-password", name: "Jane 2" })
     ).rejects.toBeInstanceOf(DuplicateEmailError);
   });
+
+  it("maps a concurrent duplicate insert to DuplicateEmailError", async () => {
+    const input = { email: "race@example.com", password: "s3cret-password", name: "Race" };
+    const results = await Promise.allSettled([createUser(input), createUser({ ...input, name: "Race 2" })]);
+    const fulfilled = results.filter((r) => r.status === "fulfilled");
+    const rejected = results.filter((r) => r.status === "rejected");
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    expect((rejected[0] as PromiseRejectedResult).reason).toBeInstanceOf(DuplicateEmailError);
+  });
 });
